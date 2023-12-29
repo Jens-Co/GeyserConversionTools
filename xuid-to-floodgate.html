@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XUID to Floodgate UUID Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        #container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        input {
+            width: 80%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-item {
+            margin-bottom: 10px;
+        }
+        .copy-button {
+            background-color: #008CBA;
+            color: #fff;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .copy-button:hover {
+            background-color: #007FAA;
+        }
+    </style>
+    </head>
+    
+    <body>
+        <div id="container">
+            <h2>XUID to Floodgate UUID Converter</h2>
+            <p>Enter XUID(s) (separated by commas):</p>
+            <input type="text" id="xuidInput" placeholder="e.g., 1234567890123456, 7890123456789012">
+            <button onclick="convertXuids()">Convert</button>
+    
+            <div id="result"></div>
+    
+            <!-- Add the Copy to Clipboard button outside the result container -->
+            <button id="copyAllButton" class="copy-button" style="display:none;">Copy UUIDs to Clipboard</button>
+    
+            <!-- Go Back button -->
+            <a href="index.html"><button>Go Back</button>
+    </div>
+
+    <script>
+        const hexToUuid = (hex) => {
+            const chunks = hex.match(/.{1,2}/g);
+            const formattedUuid = `${chunks[0]}${chunks[1]}${chunks[2]}${chunks[3]}-${chunks[4]}${chunks[5]}-${chunks[6]}${chunks[7]}-${chunks[8]}${chunks[9]}-${chunks[10]}${chunks[11]}${chunks[12]}${chunks[13]}${chunks[14]}${chunks[15]}`;
+            return formattedUuid;
+        };
+
+        const createFuuid = (xuid) => {
+            const hexFUUID = `0000000000000000000${xuid.toString(16)}`;
+            return hexToUuid(hexFUUID);
+        };
+
+        function convertXuids() {
+            const xuidInput = document.getElementById('xuidInput').value;
+            const xuids = xuidInput.split(',').map(xuid => xuid.trim());
+
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = '';
+
+            let concatenatedUuids = '';
+
+            xuids.forEach(xuid => {
+                const uuid = createFuuid(parseInt(xuid));
+                concatenatedUuids += uuid + ', ';
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result-item';
+                resultElement.innerHTML = `<strong>${xuid}</strong>  =>  ${uuid}`;
+
+                resultContainer.appendChild(resultElement);
+            });
+
+            // Add the Copy to Clipboard button and make it visible
+            const copyAllButton = document.getElementById('copyAllButton');
+            copyAllButton.style.display = 'block';
+            copyAllButton.onclick = function () {
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = concatenatedUuids.slice(0, -2);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('Copied to clipboard');
+            };
+        }
+    </script>
+</body>
+</html>
