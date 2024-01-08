@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XUID to Floodgate UUID Converter</title>
+    <title>Floodgate UUID to XUID Converter</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -65,47 +65,42 @@
     
     <body>
         <div id="container">
-            <h2>XUID to Floodgate UUID Converter</h2>
-            <p>Enter XUID(s) (separated by commas):</p>
-            <input type="text" id="xuidInput" placeholder="e.g., 1234567890123456, 7890123456789012">
-            <button onclick="convertXuids()">Convert</button>
+            <h2>Floodgate UUID to XUID Converter</h2>
+            <p>Enter Floodgate UUID(s) (separated by commas):</p>
+            <input type="text" id="uuidInput" placeholder="e.g., 1c5b6b25-cf7c-4a89-9d3a-8c6d9a4a7d49, 3f7d5128-3b2c-4ec9-a6e0-4a8a14b068a1">
+            <button onclick="convertUuids()">Convert</button>
     
             <div id="result"></div>
             <!-- Add the Copy to Clipboard button outside the result container -->
-            <button id="copyAllButton" class="copy-button" style="display:none;">Copy UUIDs to Clipboard</button>
+            <button id="copyAllButton" class="copy-button" style="display:none;">Copy XUIDs to Clipboard</button>
     
     
             <!-- Go Back button -->
-            <a href="index.html"><button>Go Back</button>
+            <a href="index.html"><button>Go Back</button></a>
         </div>
 
     <script>
-        const hexToUuid = (hex) => {
-            const chunks = hex.match(/.{1,2}/g);
-            const formattedUuid = `${chunks[0]}${chunks[1]}${chunks[2]}${chunks[3]}-${chunks[4]}${chunks[5]}-${chunks[6]}${chunks[7]}-${chunks[8]}${chunks[9]}-${chunks[10]}${chunks[11]}${chunks[12]}${chunks[13]}${chunks[14]}${chunks[15]}`;
-            return formattedUuid;
+        const uuidToXuid = (uuid) => {
+            const hex = uuid.replace(/-/g, '');
+            const xuid = parseInt(hex.substring(16), 16);
+            return xuid;
         };
 
-        const createFuuid = (xuid) => {
-            const hexFUUID = `0000000000000000000${xuid.toString(16)}`;
-            return hexToUuid(hexFUUID);
-        };
-
-        function convertXuids() {
-            const xuidInput = document.getElementById('xuidInput').value;
-            const xuids = xuidInput.split(',').map(xuid => xuid.trim());
+        function convertUuids() {
+            const uuidInput = document.getElementById('uuidInput').value;
+            const uuids = uuidInput.split(',').map(uuid => uuid.trim());
 
             const resultContainer = document.getElementById('result');
             resultContainer.innerHTML = '';
 
-            let concatenatedUuids = '';
+            let concatenatedXuids = '';
 
-            xuids.forEach(xuid => {
-                const uuid = createFuuid(parseInt(xuid));
-                concatenatedUuids += uuid + ', ';
+            uuids.forEach(uuid => {
+                const xuid = uuidToXuid(uuid);
+                concatenatedXuids += xuid + ', ';
                 const resultElement = document.createElement('div');
                 resultElement.className = 'result-item';
-                resultElement.innerHTML = `<strong>${xuid}</strong>  =>  ${uuid}`;
+                resultElement.innerHTML = `<strong>${uuid}</strong>  =>  ${xuid}`;
 
                 resultContainer.appendChild(resultElement);
             });
@@ -116,7 +111,7 @@
             copyAllButton.onclick = function () {
                 const tempInput = document.createElement('input');
                 document.body.appendChild(tempInput);
-                tempInput.value = concatenatedUuids.slice(0, -2);
+                tempInput.value = concatenatedXuids.slice(0, -2);
                 tempInput.select();
                 document.execCommand('copy');
                 document.body.removeChild(tempInput);
